@@ -1,0 +1,32 @@
+{
+  "name": "message-forever",
+  "version": "0.1.0",
+  "description": "A simple messaging platform built on Arweave",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LeGaryGary/Message-Forever.git"
+  },
+  "keywords": [
+    "Messaging",
+    "Arweave"
+  ],
+  "author": "Gary Gary",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LeGaryGary/Message-Forever/issues"
+  },
+  "homepage": "https://github.com/LeGaryGary/Message-Forever#readme",
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4",
+    "parcel-plugin-svelte": "^4.0.6",
+    "svelte": "^3.20.1"
+  },
+  "dependencies": {
+    "arweave": "^1.6.0"
+  }
+}
