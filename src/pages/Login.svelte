@@ -5,7 +5,7 @@
     fileReader.onload = e => {
       const newUser = {};
       newUser.wallet = JSON.parse(e.target.result);
-      updateUser(newUser).then(modifiedUser => user.set(modifiedUser));
+      updateUser(newUser, user);
     };
     fileReader.readAsText(event.target.files[0]);
   }

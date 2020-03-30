@@ -73,7 +73,6 @@ export function getOrSetFunc(func, get, set) {
 export function getOrSetFuncAsync(asyncFunc, get, set) {
   return async (...params) => {
     const paramsKey = JSON.stringify(params);
-    console.log(paramsKey);
     const cached = get(paramsKey);
     if (cached) return cached;
     const value = await asyncFunc(...params);

@@ -4,20 +4,27 @@ import { arweave } from './arweave/arweave';
 
 const { getUser, setUser } = wrap('User', getItem, setItem);
 
-function storeInitiliser(currentUser, store) {
-  updateUser(currentUser).then(newUser => store.set(newUser));
+export function updateUser(currentUser, store) {
+  console.log(arguments)
+  if (currentUser === null) return;
+  if (currentUser.address && currentUser.identifier) return;
+  arweave.wallets
+    .jwkToAddress(currentUser.wallet)
+    .then(address => {
+      return {
+        ...currentUser,
+        address
+      };
+    })
+    .then(newUser => {
+      return FindUserIdentifierAsync(newUser).then(identifier => ({
+        ...newUser,
+        identifier
+      }));
+    })
+    .then(newUser => {
+      store.set(newUser);
+    });
 }
 
-export async function updateUser(currentUser) {
-  console.log(currentUser);
-  if (currentUser === null) return null;
-  const address = await arweave.wallets.jwkToAddress(currentUser.wallet);
-  const newUser = {
-    ...currentUser,
-    address
-  };
-  newUser.identifier = await FindUserIdentifierAsync(newUser);
-  return newUser;
-}
-
-export const user = createStore(getUser, setUser, null, storeInitiliser);
+export const user = createStore(getUser, setUser, null, updateUser);

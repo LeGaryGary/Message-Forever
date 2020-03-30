@@ -45,7 +45,6 @@ export async function FindNameAsync(walletAddress) {
     if (txIds.length === 0) return null;
     const nameTxId = txIds[0];
     const tx = await GetTxCachedAsync(nameTxId);
-    console.log(tx);
     const data = tx.get("data", { decode: true, string: true });
     return data;
 }

@@ -11,12 +11,12 @@
     font-size: max(5vw, 5vh);
     border-radius: 5px;
   }
-  div {
+  .page-name {
     display: table-cell;
     vertical-align: middle;
   }
 </style>
 
-<div class="button" on:click={() => page.set(pageName)}>
-  <div>{pageName}</div>
+<div class='button' on:click={() => page.set(pageName)}>
+  <div class='page-name'>{pageName}</div>
 </div>

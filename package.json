@@ -27,6 +27,7 @@
     "svelte": "^3.20.1"
   },
   "dependencies": {
-    "arweave": "^1.6.0"
+    "arweave": "^1.6.0",
+    "s": "^1.0.0"
   }
 }

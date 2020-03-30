@@ -1,5 +1,5 @@
 <script>
-  import { page } from "../data-interfaces/page";
+  import { page } from '../data-interfaces/page';
 </script>
 
 <style>
@@ -9,11 +9,8 @@
     margin: 8px 0 0 8px;
   }
   i:hover {
-	opacity: 0.85;
-}
+    opacity: 0.85;
+  }
 </style>
 
-<div on:click={() => page.set('Home')}>
-  <i class="fas fa-chevron-circle-left"/>
-  <hr/>
-</div>
+<i on:click={() => page.set('Home')} class="fas fa-chevron-circle-left" />
