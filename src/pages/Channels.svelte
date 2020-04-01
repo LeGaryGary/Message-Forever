@@ -1,5 +1,6 @@
 <script>
-  import BackToHomeButton from '../components/BackToHomeButton.svelte'
+  import BackToHomeButton from '../components/BackToHomeButton.svelte';
+  import NavBar from '../components/NavBar.svelte';
 </script>
 
-<BackToHomeButton/>
+<NavBar backNavItem={BackToHomeButton} title="channels" />

@@ -1,5 +1,5 @@
 import {getItem, setItem, wrap, getOrSetFuncAsync} from '../persistentCache'
-import { arweave } from './arweave';
+import { arweave } from './';
 import {ArqlOp} from 'arql-ops'
 
 const {getArqlCache, setArqlCache} = wrap('ArqlCache', getItem, setItem)

@@ -1,5 +1,5 @@
 <script>
-  import { user, updateUser } from '../data-interfaces/user';
+  import { user, updateUser } from '../data-interfaces/mf/user';
   export function fileAdded(event) {
     const fileReader = new FileReader();
     fileReader.onload = e => {
@@ -35,9 +35,6 @@
   }
 
   [type='file'] + label {
-    background-color: #aaa;
-    border-radius: 0.317rem;
-    color: #fff;
     cursor: pointer;
     display: inline-block;
     padding: 2rem 4rem;
@@ -60,6 +57,6 @@
       id="file"
       class="custom-file-input"
       on:change={fileAdded} />
-    <label for="file">Login with your wallet</label>
+    <label class='button' for="file">login with your wallet</label>
   </div>
 </div>

@@ -1,11 +1,10 @@
-import { getItem, setItem, wrap, createStore } from './persistentCache';
-import { FindUserIdentifierAsync } from './arweave/arweaveId';
-import { arweave } from './arweave/arweave';
+import { getItem, setItem, wrap, createStore } from '../persistentCache';
+import { arweave } from '../arweave'
+import { LookupUserIdentifierAsync } from '../arweave/applications/arweaveId';
 
 const { getUser, setUser } = wrap('User', getItem, setItem);
 
 export function updateUser(currentUser, store) {
-  console.log(arguments)
   if (currentUser === null) return;
   if (currentUser.address && currentUser.identifier) return;
   arweave.wallets
@@ -17,7 +16,7 @@ export function updateUser(currentUser, store) {
       };
     })
     .then(newUser => {
-      return FindUserIdentifierAsync(newUser).then(identifier => ({
+      return LookupUserIdentifierAsync(newUser).then(identifier => ({
         ...newUser,
         identifier
       }));
@@ -26,5 +25,9 @@ export function updateUser(currentUser, store) {
       store.set(newUser);
     });
 }
+
+// async function FindIdentifier(user){
+//   return await FindUserIdentifierAsync
+// }
 
 export const user = createStore(getUser, setUser, null, updateUser);
