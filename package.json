@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "description": "A simple messaging platform built on Arweave",
   "main": "index.js",
+  "jest": {},
   "scripts": {
     "start": "parcel index.html",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
   },
   "homepage": "https://github.com/LeGaryGary/Message-Forever#readme",
   "devDependencies": {
+    "jest": "^25.2.4",
     "parcel-bundler": "^1.12.4",
     "parcel-plugin-svelte": "^4.0.6",
     "svelte": "^3.20.1"
