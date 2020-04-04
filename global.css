@@ -17,7 +17,7 @@ hr {
   height: 1px;
 }
 
-.noselect {
+.no-select {
   -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
      -khtml-user-select: none; /* Konqueror HTML */
@@ -25,6 +25,14 @@ hr {
         -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Opera and Firefox */
+}
+
+.no-drag {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
 }
 
 .gutters {
@@ -41,6 +49,10 @@ hr {
 
 .s-font {
   font-size: max(1vw, 1vh, 1em);
+}
+
+.bold {
+  font-weight: bold;
 }
 
 .button {

@@ -1,26 +1,26 @@
 <script>
-  import Home from './pages/Home.svelte'
-  import Contacts from './pages/Contacts.svelte'
-  import Groups from './pages/Groups.svelte'
-  import Channels from './pages/Channels.svelte'
+  import Home from './pages/Home.svelte';
+  import Contacts from './pages/Contacts.svelte';
+  import Groups from './pages/Groups.svelte';
+  import Channels from './pages/Channels.svelte';
 
-  import Login from './pages/Login.svelte'
+  import Login from './pages/Login.svelte';
 
-  import {page} from './data-interfaces/mf/page'
-  import {user} from './data-interfaces/mf/user'
+  import { page } from './data-interfaces/mf/page';
+  import { user } from './data-interfaces/mf/user';
 </script>
 
 {#if $user === null}
-  <Login/>
+  <Login />
 {:else}
   {#if $page === 'home'}
-    <Home/>
+    <Home />
   {:else if $page === 'contacts'}
-    <Contacts/>
+    <Contacts />
   {:else if $page === 'groups'}
-    <Groups/>
+    <Groups />
   {:else if $page === 'channels'}
-    <Channels/>
+    <Channels />
   {:else}
     <p>Not found!</p>
   {/if}

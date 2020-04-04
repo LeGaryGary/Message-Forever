@@ -1,24 +1,22 @@
 import { writable, Writable } from 'svelte/store';
 import 'regenerator-runtime/runtime';
 
-export function getItem(stateNames, objectPrototype) {
-  const cacheName = getLocalStorageName(stateNames);
-  const object = JSON.parse(localStorage.getItem(cacheName));
+export function getItem(key, objectPrototype) {
+  const object = JSON.parse(localStorage.getItem(key));
   if (objectPrototype && object) Object.setPrototypeOf(object, objectPrototype);
   return object;
 }
 
-export function setItem(item, stateNames) {
-  const cacheName = getLocalStorageName(stateNames);
-  localStorage.setItem(cacheName, JSON.stringify(item));
+export function setItem(item, key) {
+  localStorage.setItem(key, JSON.stringify(item));
 }
 
-export function wrap(stateName, get, set, objectPrototype) {
+export function wrap(key, objectPrototype) {
   const result = {};
-  result[`get${stateName}`] = (...stateNames) =>
-    get([stateName, ...(stateNames || [])], objectPrototype);
-  result[`set${stateName}`] = (item, ...stateNames) =>
-    set(item, [stateName, ...(stateNames || [])]);
+  result[`get${key}`] = (...params) =>
+    getItem([key, ...(params.map(JSON.stringify))].join('.'), objectPrototype);
+  result[`set${key}`] = (item, ...params) =>
+    setItem(item, [key, ...(params.map(JSON.stringify))].join('.'));
   return result;
 }
 

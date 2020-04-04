@@ -49,6 +49,13 @@ async function EncryptRsa(pubKey, byteArray) {
   );
 }
 
+/**
+ *
+ *
+ * @export
+ * @param {import('arweave/web/lib/wallet').JWKInterface} wallet
+ * @param {Uint8Array} byteArray
+ */
 export async function DecryptRsa(wallet, byteArray){
   const key = await walletToKey(wallet);
   return await window.crypto.subtle.decrypt({ name: 'RSA-OAEP' }, key, byteArray)
@@ -58,6 +65,10 @@ export function GenerateRandomBytes(length) {
   var array = new Uint8Array(length);
   window.crypto.getRandomValues(array);
   return array;
+}
+
+export async function AddressExists(address){
+  return await arweave.wallets.getLastTransactionID(address) != '';
 }
 
 async function walletToKey(wallet) {
@@ -192,5 +203,9 @@ export function HasUnixTime(time) {
  * @param {number} time
  */
 export function AddUnixTime(tx, time) {
-  tx.addTag(TypeTag, time.toString(10));
+  tx.addTag(UnixTimeTag, time.toString(10));
+}
+
+export function AddDateIndexing(tx){
+  const now = new Date()
 }

@@ -1,7 +1,6 @@
 <script>
   import { user } from '../data-interfaces/mf/user';
-  import { LookupWalletAddress } from '../data-interfaces/arweave/applications/arweaveId';
-  import { arweave } from '../data-interfaces/arweave';
+  import { arweave, AddressExists } from '../data-interfaces/arweave';
 
   import { CreateContact } from '../data-interfaces/mf/contacts';
 
@@ -10,30 +9,20 @@
   let showModal = false;
   let validContact = false;
 
-  let name;
-
-  async function lookUp(name) {
-    try {
-      return await LookupWalletAddress(name);
-    } catch (e) {
-      console.log(e);
-    }
-    return null;
-  }
-
-  function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
+  let address;
+  let makingContact = false;
+  let addressValid = false;
 
   async function addContact(event) {
+    addressValid = address && address.length === 43 && await AddressExists(address);
     if (event.keyCode === 13) {
       // Enter key pressed
       event.preventDefault();
-      const address = await LookupWalletAddress(name);
-      if (!address) return;
-      console.log('adding contact: ', name);
-      console.log('contact address: ', address);
+      if (!addressValid) return;
+      console.log('adding contact address: ', address);
+      makingContact = true;
       await CreateContact(address);
+      makingContact = false;
     }
   }
 
@@ -68,16 +57,14 @@
 {#if showModal}
   <Modal closeModal={() => (showModal = false)}>
     <div class="flex-container">
-      <input bind:value={name} on:keyup={addContact} type="text" use:init />
-      {#await lookUp(name)}
+      <input bind:value={address} on:keyup={addContact} type="text" placeholder="Wallet Address" use:init />
+      {#if makingContact}
         <i class="fas fa-cog validation-icon" />
-      {:then address}
-        {#if address}
-          <i class="fas fa-check-circle validation-icon" />
-        {:else}
-          <i class="far fa-times-circle validation-icon" />
-        {/if}
-      {/await}
+      {:else if addressValid}
+        <i class="fas fa-check-circle validation-icon" />
+      {:else}
+        <i class="far fa-times-circle validation-icon" />
+      {/if}
     </div>
   </Modal>
 {/if}

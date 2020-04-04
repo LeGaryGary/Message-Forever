@@ -38,14 +38,14 @@
   }
 </style>
 
-<div class="navbar-container">
+<div class="navbar-container no-select no-drag">
   <span class="navbar-left">
     <span class="nav-item">
       <svelte:component this={backNavItem} />
     </span>
   </span>
   <span class="navbar-center">
-    <span class="nav-item m-font no-select">{title}</span>
+    <span class="nav-item m-font">{title}</span>
   </span>
   <span class="navbar-right">
     {#each rightNavItems as rightNavItem}

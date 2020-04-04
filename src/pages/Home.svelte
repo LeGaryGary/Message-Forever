@@ -36,7 +36,7 @@
 }
 </style>
 
-<div class='logged-in s-font'>logged in as {$user.identifier || $user.address}</div>
+<div class='logged-in s-font'>logged in as {$user.name || $user.address}</div>
 
 <div class="flex-grid-thirds gutters">
   <div class='col'>

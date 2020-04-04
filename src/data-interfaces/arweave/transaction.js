@@ -1,12 +1,10 @@
 import Transaction from 'arweave/web/lib/transaction';
 
-import { getItem, setItem, wrap, getOrSetFuncAsync } from '../persistentCache';
+import { wrap, getOrSetFuncAsync } from '../persistentCache';
 import { arweave } from './';
 
 const { getTxCache, setTxCache } = wrap(
   'TxCache',
-  getItem,
-  setItem,
   Transaction.prototype
 );
 const getSetTaxCacheAsync = getOrSetFuncAsync(
@@ -31,7 +29,6 @@ export function GetTxCachedAsync(txId) {
  *
  * @export
  * @param {string[]} txIds
- * @returns {Transaction[]}
  */
 export function GetMultipleTxCachedAsync(txIds) {
   return Promise.all(txIds.map(GetTxCachedAsync));;

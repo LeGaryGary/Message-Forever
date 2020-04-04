@@ -1,12 +1,12 @@
 import { getItem, setItem, wrap, createStore } from '../persistentCache';
 import { arweave } from '../arweave'
-import { LookupUserIdentifierAsync } from '../arweave/applications/arweaveId';
+import { LookupNameAsync } from '../arweave/applications/arweaveId';
 
-const { getUser, setUser } = wrap('User', getItem, setItem);
+const { getUser, setUser } = wrap('User');
 
 export function updateUser(currentUser, store) {
   if (currentUser === null) return;
-  if (currentUser.address && currentUser.identifier) return;
+  if (currentUser.address && currentUser.name) return;
   arweave.wallets
     .jwkToAddress(currentUser.wallet)
     .then(address => {
@@ -16,9 +16,9 @@ export function updateUser(currentUser, store) {
       };
     })
     .then(newUser => {
-      return LookupUserIdentifierAsync(newUser).then(identifier => ({
+      return LookupNameAsync(newUser.address).then(name => ({
         ...newUser,
-        identifier
+        name
       }));
     })
     .then(newUser => {
