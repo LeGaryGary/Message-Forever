@@ -1,17 +1,11 @@
-import Transaction from 'arweave/web/lib/transaction';
+import Transaction, { Tag } from 'arweave/web/lib/transaction';
 
-import { wrap, getOrSetFuncAsync } from '../persistentCache';
+import { GetOrSetFuncAsync, Wrap } from '../persistentCache';
 import { arweave } from './';
 
-const { getTxCache, setTxCache } = wrap(
-  'TxCache',
-  Transaction.prototype
-);
-const getSetTaxCacheAsync = getOrSetFuncAsync(
-  id => arweave.transactions.get(id),
-  getTxCache,
-  setTxCache
-);
+const getSetTaxCacheAsync = GetOrSetFuncAsync('TxCache', id => arweave.transactions.get(id));
+
+const PreventNewTransactions = true;
 
 /**
  * GetTxCachedAsync gets a single transaction from the Arweave network with the provided transaction ID when the cache is missed.
@@ -20,8 +14,15 @@ const getSetTaxCacheAsync = getOrSetFuncAsync(
  * @param {string} txId
  * @returns {Transaction}
  */
-export function GetTxCachedAsync(txId) {
-  return getSetTaxCacheAsync(txId);
+export async function GetTxCachedAsync(txId) {
+  const tx = await getSetTaxCacheAsync(txId);
+  Object.setPrototypeOf(tx, Transaction.prototype);
+  if (tx) {
+    tx.get('tags').forEach(tag => {
+      Object.setPrototypeOf(tag, Tag.prototype);
+    })
+  }
+  return tx;
 }
 
 /**
@@ -32,4 +33,18 @@ export function GetTxCachedAsync(txId) {
  */
 export function GetMultipleTxCachedAsync(txIds) {
   return Promise.all(txIds.map(GetTxCachedAsync));;
+}
+
+/**
+ *
+ *
+ * @export
+ * @param {Transaction} tx
+ * @param {import('arweave/web/lib/wallet').JWKInterface} wallet
+ * @returns 
+ */
+export async function SignAndSubmitTransactionAsync(tx, wallet){
+  await arweave.transactions.sign(tx, wallet);
+  if(PreventNewTransactions) return;
+  await arweave.transactions.post(tx);
 }

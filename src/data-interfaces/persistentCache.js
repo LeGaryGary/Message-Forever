@@ -1,22 +1,22 @@
 import { writable, Writable } from 'svelte/store';
 import 'regenerator-runtime/runtime';
 
-export function getItem(key, objectPrototype) {
+export function GetItem(key) {
   const object = JSON.parse(localStorage.getItem(key));
-  if (objectPrototype && object) Object.setPrototypeOf(object, objectPrototype);
   return object;
 }
 
-export function setItem(item, key) {
+export function SetItem(item, key) {
   localStorage.setItem(key, JSON.stringify(item));
 }
 
-export function wrap(key, objectPrototype) {
-  const result = {};
-  result[`get${key}`] = (...params) =>
-    getItem([key, ...(params.map(JSON.stringify))].join('.'), objectPrototype);
-  result[`set${key}`] = (item, ...params) =>
-    setItem(item, [key, ...(params.map(JSON.stringify))].join('.'));
+export function Wrap(key) {
+  function getParamsKey(params){
+    return [key, ...(params.map(JSON.stringify))].join('.')
+  }
+  const result = [];
+  result.push((...params) => GetItem(getParamsKey(params)));
+  result.push((item, ...params) => SetItem(item, getParamsKey(params)));
   return result;
 }
 
@@ -24,13 +24,13 @@ export function wrap(key, objectPrototype) {
  *
  *
  * @export
- * @param {(key: string) => any} get
- * @param {(value: any, key: string) => void} set
+ * @param {string} name
  * @param {any} defaultValue
  * @param {(currentValue: any, store: Writable<any>) => void} storeInitiliser
  * @returns
  */
-export function createStore(get, set, defaultValue, storeInitiliser) {
+export function CreateStore(name, defaultValue, storeInitiliser) {
+  const [get, set] = Wrap(name);
   var currentValue = get();
   if (currentValue === null) {
     currentValue = defaultValue;
@@ -50,7 +50,8 @@ export function createStore(get, set, defaultValue, storeInitiliser) {
  * @param {(value: T, key: string) => void} set
  * @returns
  */
-export function getOrSetFunc(func, get, set) {
+export function GetOrSetFunc(name, func) {
+  const [get, set] = Wrap(name);
   return (...params) => {
     const paramsKey = JSON.stringify(params);
     const cached = get(paramsKey);
@@ -68,7 +69,8 @@ export function getOrSetFunc(func, get, set) {
  * @param {(value: T, key: string) => void} set
  * @returns
  */
-export function getOrSetFuncAsync(asyncFunc, get, set) {
+export function GetOrSetFuncAsync(name, asyncFunc) {
+  const [get, set] = Wrap(name);
   return async (...params) => {
     const paramsKey = JSON.stringify(params);
     const cached = get(paramsKey);
@@ -77,8 +79,4 @@ export function getOrSetFuncAsync(asyncFunc, get, set) {
     set(value, paramsKey);
     return value;
   };
-}
-
-function getLocalStorageName(stateNames) {
-  return stateNames.join('.');
 }

@@ -1,7 +1,7 @@
 import { and, or, equals } from 'arql-ops';
-import Transaction, { Tag } from 'arweave/web/lib/transaction';
+import Transaction from 'arweave/web/lib/transaction';
 
-import { getItem, setItem, wrap, createStore } from '../persistentCache';
+import { Wrap, CreateStore } from '../persistentCache';
 import {
   arweave,
   FromWalletAddress,
@@ -12,7 +12,7 @@ import {
   DecryptRsa,
   UnixTimeTag
 } from '../arweave';
-import { GetMultipleTxCachedAsync } from '../arweave/transaction';
+import { GetMultipleTxCachedAsync, SignAndSubmitTransactionAsync } from '../arweave/transaction';
 
 import { ThisApp, StampTx, AppVersion } from './';
 import { user } from './user';
@@ -24,8 +24,8 @@ const ContactAddressTag = 'Contact-Address';
 
 let currentUser = null;
 
-const { getContacts, setContacts } = wrap('Contacts');
-export const contacts = createStore(getContacts, setContacts, []);
+export const contacts = CreateStore('Contacts', []);
+
 user.subscribe(newUser => {
   if (newUser && newUser.address) {
     currentUser = newUser;
@@ -33,8 +33,7 @@ user.subscribe(newUser => {
   }
 });
 
-const { getContactSelected, setContactSelected } = wrap('ContactSelected');
-export const selectedContact = createStore(getContactSelected, setContactSelected, null);
+export const selectedContact = CreateStore('ContactSelected', null);
 
 export async function CreateContact(address) {
   if (currentUser === null) return;
@@ -57,8 +56,8 @@ export async function CreateContact(address) {
     contactEncryptedAesKeyBuffer,
     address
   );
-  await arweave.transactions.sign(contactTx, currentUser.wallet);
-  await arweave.transactions.post(contactTx);
+
+  await SignAndSubmitTransactionAsync(contactTx, currentUser.wallet);
   console.log('contact tx: ', contactTx.id);
 
   // const keyData = await DecryptRsa(currentUser.wallet, arweave.utils.b64UrlToBuffer(contactTx.data));
@@ -130,7 +129,6 @@ export async function LoadContacts(address) {
   const txs = await GetMultipleTxCachedAsync(
     await arweave.arql(contactsDataQuery)
   );
-  console.log(txs)
   let newContacts = await Promise.all(
     txs.map(async tx => {
       const dataBuffer = arweave.utils.b64UrlToBuffer(tx.data);
@@ -140,7 +138,6 @@ export async function LoadContacts(address) {
       const txData = {};
       txData.address = txFrom;
       tx.get('tags').forEach(tag => {
-        Object.setPrototypeOf(tag, Tag.prototype);
         let key = tag.get('name', { decode: true, string: true });
         let value = tag.get('value', { decode: true, string: true });
         if (key === UnixTimeTag) txData.unixTime = value;

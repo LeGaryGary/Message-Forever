@@ -14,7 +14,6 @@
   } from '../data-interfaces/mf/contacts';
 
   async function getLastMessage(contact) {
-    console.log(contact);
     return {
       timeContext: ago(new Date(1585968180 * 1000)),
       text: 'not a fcking boring filler message'
@@ -35,7 +34,7 @@
     cursor: pointer;
   }
   .contact:hover {
-    transform: scale(0.98);
+    transform: scale(0.995);
     opacity: 0.85;
   }
   .contact-item {

@@ -1,4 +1,3 @@
-import { getItem, setItem, wrap, createStore } from '../persistentCache';
+import { CreateStore } from '../persistentCache';
 
-const { getPage, setPage } = wrap('Page', getItem, setItem);
-export const page = createStore(getPage, setPage, 'home');
+export const page = CreateStore('Page', 'home');

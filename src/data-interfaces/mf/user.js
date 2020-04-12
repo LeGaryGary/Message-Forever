@@ -1,8 +1,8 @@
-import { getItem, setItem, wrap, createStore } from '../persistentCache';
+import { GetItem, SetItem, Wrap, CreateStore } from '../persistentCache';
 import { arweave } from '../arweave'
 import { LookupNameAsync } from '../arweave/applications/arweaveId';
 
-const { getUser, setUser } = wrap('User');
+export const user = CreateStore('User', null, updateUser);
 
 export function updateUser(currentUser, store) {
   if (currentUser === null) return;
@@ -25,9 +25,3 @@ export function updateUser(currentUser, store) {
       store.set(newUser);
     });
 }
-
-// async function FindIdentifier(user){
-//   return await FindUserIdentifierAsync
-// }
-
-export const user = createStore(getUser, setUser, null, updateUser);
