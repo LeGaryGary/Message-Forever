@@ -3,7 +3,9 @@ import Transaction, { Tag } from 'arweave/web/lib/transaction';
 import { GetOrSetFuncAsync, Wrap } from '../persistentCache';
 import { arweave } from './';
 
-const getSetTaxCacheAsync = GetOrSetFuncAsync('TxCache', id => arweave.transactions.get(id));
+const cacheName = 'TxCache';
+const [getTxFromCache, setTxToCache] = Wrap(cacheName);
+const getSetTaxCacheAsync = GetOrSetFuncAsync(cacheName, id => arweave.transactions.get(id));
 
 const PreventNewTransactions = true;
 
@@ -45,6 +47,7 @@ export function GetMultipleTxCachedAsync(txIds) {
  */
 export async function SignAndSubmitTransactionAsync(tx, wallet){
   await arweave.transactions.sign(tx, wallet);
+  setTxToCache(tx, tx.id);
   if(PreventNewTransactions) return;
   await arweave.transactions.post(tx);
 }

@@ -1,4 +1,3 @@
-import ago from 's-ago';
 import Transaction from 'arweave/web/lib/transaction';
 
 import { arweave, AddType } from '../arweave';
@@ -31,6 +30,17 @@ export async function SendPrivateMessage(message, address) {
   const aesKey = await getPrivateMessageKey(address);
   const tx = await createMessageTransaction(message, TypePrivateMessage, address, aesKey);
   await SignAndSubmitTransactionAsync(tx, currentUser.wallet);
+  const messageObject = constructMessageObject(tx, aesKey);
+  addPrivateMessageToStore(messageObject)
+}
+
+function constructMessageObject(tx, aesKey){
+  return {content: 'test'};
+}
+
+function addPrivateMessageToStore(messageObject, address){
+  const store = getPrivateMessageStore(address)
+  // Need to insert message into store in the right location
 }
 
 /**

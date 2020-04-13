@@ -53,11 +53,10 @@ export function CreateStore(name, defaultValue, storeInitiliser) {
 export function GetOrSetFunc(name, func) {
   const [get, set] = Wrap(name);
   return (...params) => {
-    const paramsKey = JSON.stringify(params);
-    const cached = get(paramsKey);
+    const cached = get(...params);
     if (cached) return cached;
     const value = func(...params);
-    set(value, paramsKey);
+    set(value, ...params);
     return value;
   };
 }
@@ -72,11 +71,10 @@ export function GetOrSetFunc(name, func) {
 export function GetOrSetFuncAsync(name, asyncFunc) {
   const [get, set] = Wrap(name);
   return async (...params) => {
-    const paramsKey = JSON.stringify(params);
-    const cached = get(paramsKey);
+    const cached = get(...params);
     if (cached) return cached;
     const value = await asyncFunc(...params);
-    set(value, paramsKey);
+    set(value, ...params);
     return value;
   };
 }
