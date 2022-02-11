@@ -2,7 +2,7 @@
   import NavBar from './NavBar.svelte';
   import BackDeselectContactButton from './BackDeselectContactButton.svelte';
 
-  import {SendPrivateMessage} from '../data-interfaces/mf/messages'
+  import { SendPrivateMessage } from '../data-interfaces/mf/messages';
 
   export let mode;
   export let selected;
@@ -13,12 +13,29 @@
   async function sendMessage() {
     if (!newMessage) return;
     console.log(newMessage);
-    SendPrivateMessage(newMessage, selected.address)
+    if (mode == 'private') {
+      SendPrivateMessage(newMessage, selected.address);
+    }
     newMessage = '';
   }
 
-  const messages = [{ test: 'test' }];
+  const messages = [{ fromAddress: "", recipentAddress: "", fromName: "", content: 'test' }];
 </script>
+
+<NavBar backNavItem={BackDeselectContactButton} {title} />
+
+{#each messages as message}
+  <div class="container">
+    <img src="/w3images/bandmember.jpg" alt="Avatar" />
+    <p>{message.content}</p>
+    <span class="time-right">11:00</span>
+  </div>
+{/each}
+
+<div class="message-box">
+  <input contenteditable="true" class="message-input" bind:value={newMessage} />
+  <i class="far fa-paper-plane send" on:click={sendMessage} />
+</div>
 
 <style>
   .message-box {
@@ -50,13 +67,15 @@
   .send {
     cursor: pointer;
   }
+  .container {
+    border: 2px solid #dedede;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+  }
+  .darker {
+    border-color: #ccc;
+    background-color: #ddd;
+  }
 </style>
-
-<NavBar backNavItem={BackDeselectContactButton} {title} />
-
-{#each messages as message}{JSON.stringify(message)}{/each}
-
-<div class="message-box">
-  <input contenteditable="true" class="message-input" bind:value={newMessage} />
-  <i class="far fa-paper-plane send" on:click={sendMessage} />
-</div>

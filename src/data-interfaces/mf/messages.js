@@ -5,12 +5,14 @@ import { SignAndSubmitTransactionAsync } from '../arweave/transaction';
 
 import { StampTx } from './';
 
+import { UnixTimeTag } from '../arweave';
+
 import {user} from './user'
 import {contacts} from './contacts';
 
 
 const RecipientTag = 'Recipient';
-const EncryptedTag = 'Encrypted';
+const IsEncryptedTag = 'Encrypted';
 
 const TypePrivateMessage = 'Private-Message';
 
@@ -30,13 +32,32 @@ export async function SendPrivateMessage(message, address) {
   const aesKey = await getPrivateMessageKey(address);
   const tx = await createMessageTransaction(message, TypePrivateMessage, address, aesKey);
   await SignAndSubmitTransactionAsync(tx, currentUser.wallet);
-  const messageObject = constructMessageObject(tx, aesKey);
+  const messageObject = await constructMessageObject(tx, aesKey);
   addPrivateMessageToStore(messageObject)
 }
 
-function constructMessageObject(tx, aesKey){
-  return {content: 'test'};
+/**
+ * 
+ *
+ * @export
+ * @param {Transaction} tx
+ * @param {ArrayBuffer} aesKey
+ * @returns 
+ */
+async function constructMessageObject(tx, aesKey){
+  const txFrom = await arweave.wallets.ownerToAddress(tx.owner);
+  const txData = {};
+  txData.address = txFrom;
+  tx.get('tags').forEach(tag => {
+    let key = tag.get('name', { decode: true, string: true });
+    let value = tag.get('value', { decode: true, string: true });
+    if (key === UnixTimeTag) txData.unixTime = value;
+    if (key === RecipientTag) txData.recipient = value;
+  });
+  if (aesKey) messageContent = await arweave.crypto.decrypt(data, aesKey);
+  return {content: data, time: txData.unixTime, fromAddress: txData.address, toAddress: txData.recipient}
 }
+
 
 function addPrivateMessageToStore(messageObject, address){
   const store = getPrivateMessageStore(address)
@@ -76,7 +97,7 @@ export async function createMessageTransaction(message, type, address, aesKey){
   )
   StampTx(tx);
   AddType(tx, type);
-  addEncrypted(tx, aesKey != null);
+  addIsEncrypted(tx, aesKey != null);
   if (address) addRecipient(tx, address);
   console.log('message tx: ', tx);
   return tx;
@@ -100,6 +121,6 @@ export function addRecipient(tx, address){
  * @param {Transaction} tx
  * @param {boolean} isEncrypted
  */
-export function addEncrypted(tx, isEncrypted){
-  tx.addTag(EncryptedTag, isEncrypted.toString())
+export function addIsEncrypted(tx, isEncrypted){
+  tx.addTag(IsEncryptedTag, isEncrypted.toString())
 }
