@@ -158,7 +158,7 @@ export async function LoadContacts(address) {
         address: contactAddress,
         aesKey: key,
         name: await LookupNameAsync(contactAddress),
-        iconUrl: await LookupAvatarAsync(contactAddress) || 'https://arweave.net/PylCrHjd8cq1V-qO9vsgKngijvVn7LAVLB6apdz0QK0'
+        iconUrl: await LookupAvatarAsync(contactAddress)
       };
     })
   )

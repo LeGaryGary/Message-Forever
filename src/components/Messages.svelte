@@ -2,7 +2,13 @@
   import NavBar from './NavBar.svelte';
   import BackDeselectContactButton from './BackDeselectContactButton.svelte';
 
-  import { SendPrivateMessage } from '../data-interfaces/mf/messages';
+  import {
+    SendPrivateMessage,
+    GetPrivateMessageStore
+  } from '../data-interfaces/mf/messages';
+  import { UnixTimeToMessageTime } from '../data-interfaces/time';
+  import { LookupAvatarAsync } from '../data-interfaces/arweave/applications/arvatar';
+  import { user } from '../data-interfaces/mf/user';
 
   export let mode;
   export let selected;
@@ -19,25 +25,63 @@
     newMessage = '';
   }
 
-  const messages = [{ fromAddress: "", recipentAddress: "", fromName: "", content: 'test' }];
+  let messages;
+  if (mode == 'private') messages = GetPrivateMessageStore(selected.address);
 </script>
 
 <NavBar backNavItem={BackDeselectContactButton} {title} />
 
-{#each messages as message}
-  <div class="container">
-    <img src="/w3images/bandmember.jpg" alt="Avatar" />
-    <p>{message.content}</p>
-    <span class="time-right">11:00</span>
-  </div>
-{/each}
+<div class="messages">
+  {#each $messages as message}
+    {#await LookupAvatarAsync(message.fromAddress) then avatar}
+      {#if $user.address == message.fromAddress}
+        <div class="container">
+          <!-- Need to put in avatars like in contacts -->
+          <img
+            src={avatar}
+            alt="Arvatar"
+            class="contact-item no-select avatar"
+          />
+          <p>{message.content}</p>
+          <span>{UnixTimeToMessageTime(message.time)}</span>
+        </div>
+      {:else}
+        <div class="container darker">
+          <!-- Need to put in avatars like in contacts -->
+          <img src={avatar} alt="Arvatar" class="contact-item no-select" />
+          <p>{message.content}</p>
+          <span>{UnixTimeToMessageTime(message.time)}</span>
+        </div>
+      {/if}
+    {/await}
+  {/each}
+</div>
 
-<div class="message-box">
-  <input contenteditable="true" class="message-input" bind:value={newMessage} />
-  <i class="far fa-paper-plane send" on:click={sendMessage} />
+<div class="message-box-background">
+  <div class="message-box">
+    <input
+      contenteditable="true"
+      class="message-input"
+      bind:value={newMessage}
+    />
+    <i class="far fa-paper-plane send" on:click={sendMessage} />
+  </div>
 </div>
 
 <style>
+  .messages {
+    overflow-y: scroll;
+  }
+  .message-box-background {
+    background-color: white;
+    width: 100%;
+    height: 40px;
+    position: fixed;
+    left: 50%;
+    bottom: 0px;
+    transform: translate(-50%, -20%);
+    border-radius: 20px;
+  }
   .message-box {
     width: 98%;
     border-radius: 20px;
@@ -77,5 +121,10 @@
   .darker {
     border-color: #ccc;
     background-color: #ddd;
+  }
+  .avatar {
+    width: max(6vw, 6vh, 4em);
+    height: max(6vw, 6vh, 4em);
+    border-radius: 50%;
   }
 </style>

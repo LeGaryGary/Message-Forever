@@ -5,7 +5,7 @@
   import AddContact from '../components/AddContactButton.svelte';
   import BackToHomeButton from '../components/BackToHomeButton.svelte';
 
-  import Messages from '../components/Messages.svelte'
+  import Messages from '../components/Messages.svelte';
 
   import {
     contacts,
@@ -20,6 +20,49 @@
     };
   }
 </script>
+
+{#if $selectedContact}
+  <Messages
+    title={$selectedContact.name}
+    mode="private"
+    selected={$selectedContact}
+  />
+{:else}
+  <div class="contacts no-drag">
+    <NavBar
+      backNavItem={BackToHomeButton}
+      rightNavItems={[AddContact]}
+      title="contacts"
+    />
+
+    {#each $contacts as contact}
+      <div class="contact" on:click={() => selectedContact.set(contact)}>
+        <img
+          src={contact.iconUrl}
+          alt="Arvatar"
+          class="contact-item no-select"
+        />
+        <div class="contact-item contact-container">
+          {#await getLastMessage(contact)}
+            <div>{contact.name}</div>
+            <div>
+              <i class="fas fa-cog validation-icon" />
+            </div>
+          {:then lastMessage}
+            <div>
+              <span class="bold">{contact.name}</span>
+            </div>
+            <div>
+              <i>{lastMessage.timeContext}</i>
+            </div>
+            <div>{lastMessage.text}</div>
+          {/await}
+        </div>
+      </div>
+      <hr />
+    {/each}
+  </div>
+{/if}
 
 <style>
   img {
@@ -49,43 +92,3 @@
     margin: 0;
   }
 </style>
-
-{#if $selectedContact}
-  <Messages title={$selectedContact.name} mode='private' selected={$selectedContact}/>
-{:else}
-  <div class="contacts no-drag">
-    <NavBar
-      backNavItem={BackToHomeButton}
-      rightNavItems={[AddContact]}
-      title="contacts" />
-
-    {#each $contacts as contact}
-      <div
-        class="contact"
-        on:click={() => selectedContact.set(contact)}>
-        <img
-          src={contact.iconUrl}
-          alt="Arvatar"
-          class="contact-item no-select" />
-        <div class="contact-item contact-container">
-          {#await getLastMessage(contact)}
-            <div>{contact.name}</div>
-            <div>
-              <i class="fas fa-cog validation-icon" />
-            </div>
-          {:then lastMessage}
-            <div>
-              <span class="bold">{contact.name}</span>
-            </div>
-            <div>
-              <i>{lastMessage.timeContext}</i>
-            </div>
-            <div>{lastMessage.text}</div>
-          {/await}
-        </div>
-      </div>
-      <hr />
-    {/each}
-
-  </div>
-{/if}
