@@ -3,11 +3,15 @@ import Transaction from 'arweave/web/lib/transaction';
 import { equals } from 'arql-ops';
 
 // Since v1.5.1 you're now able to call the init function for the web version without options. The current path will be used by default, recommended.
-export const arweave = Arweave.init();
+export const arweave = Arweave.init({
+  host: 'arweave.net',
+  port: 443,
+  protocol: 'https'
+});
 
 // LAYER 1
 // TAG: FROM
-export const FromTag = 'from';
+const FromTag = 'from';
 
 /**
  * FromWalletAddress uses the 'from' tag to locate transactions which have been created by the parameter wallet address.
@@ -16,7 +20,7 @@ export const FromTag = 'from';
  * @param {string} address
  */
 export function FromWalletAddress(address) {
-  return equals('from', address);
+  return equals(FromTag, address);
 }
 
 /**

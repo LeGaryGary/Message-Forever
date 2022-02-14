@@ -29,10 +29,11 @@ export function UnixTimeToMessageTime(unixTime) {
       datetime.getDate()
     );
   }
+  let time = String(datetime.getHours()).padStart(2, '0') + ':' + String(datetime.getMinutes()).padStart(2, '0');
   if (
     now.getMonth() - datetime.getMonth() > 0 ||
     now.getDate() - datetime.getDate() > 0
   ) {
-    return months[datetime.getMonth()] + ' ' + datetime.getDate();
-  } else return datetime.getHours() + ':' + String(datetime.getMinutes()).padStart(2, '0');
+    return months[datetime.getMonth()] + ' ' + datetime.getDate() + ' ' + time;
+  } else return time;
 }

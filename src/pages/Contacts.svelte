@@ -1,5 +1,6 @@
 <script>
   import ago from 's-ago';
+  import { get } from 'svelte/store';
 
   import NavBar from '../components/NavBar.svelte';
   import AddContact from '../components/AddContactButton.svelte';
@@ -7,18 +8,21 @@
 
   import Messages from '../components/Messages.svelte';
 
-  import {
-    contacts,
-    TransactionContactConverter,
-    selectedContact
-  } from '../data-interfaces/mf/contacts';
+  import { contacts, selectedContact } from '../data-interfaces/mf/contacts';
+
+  import { GetPrivateMessageStore } from '../data-interfaces/mf/messages';
 
   async function getLastMessage(contact) {
-    return {
-      timeContext: ago(new Date(1585968180 * 1000)),
-      text: 'not a fcking boring filler message'
-    };
+    var store = GetPrivateMessageStore(contact.address);
+    var messages = get(store);
+    if (messages.length == 0) return null;
+
+    return messages[messages.length - 1];
   }
+
+  function truncate(str, n){
+  return (str.length > n) ? str.substr(0, n-1) + '...' : str;
+};
 </script>
 
 {#if $selectedContact}
@@ -44,18 +48,22 @@
         />
         <div class="contact-item contact-container">
           {#await getLastMessage(contact)}
-            <div>{contact.name}</div>
             <div>
-              <i class="fas fa-cog validation-icon" />
+              <span class="bold">{contact.name}</span>
             </div>
+            <div>loading last message...</div>
           {:then lastMessage}
             <div>
               <span class="bold">{contact.name}</span>
             </div>
+            {#if lastMessage}
             <div>
-              <i>{lastMessage.timeContext}</i>
+              <i>{lastMessage.time ?? ''}</i>
             </div>
-            <div>{lastMessage.text}</div>
+            <div>{truncate(lastMessage.content, 37)}</div>
+            {:else}
+            <div><em>No messages to show</em></div>
+            {/if}
           {/await}
         </div>
       </div>

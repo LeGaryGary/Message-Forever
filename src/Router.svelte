@@ -8,6 +8,9 @@
 
   import { page } from './data-interfaces/mf/page';
   import { user } from './data-interfaces/mf/user';
+
+  import { RunAllRoutines } from './routines';
+  RunAllRoutines();
 </script>
 
 {#if $user === null}

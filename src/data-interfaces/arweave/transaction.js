@@ -49,5 +49,5 @@ export async function SignAndSubmitTransactionAsync(tx, wallet){
   await arweave.transactions.sign(tx, wallet);
   setTxToCache(tx, tx.id);
   if(PreventNewTransactions) return;
-  await arweave.transactions.post(tx);
+  console.log('Posted a tranaction on arweave!:', await arweave.transactions.post(tx));
 }

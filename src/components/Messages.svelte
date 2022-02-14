@@ -18,7 +18,6 @@
 
   async function sendMessage() {
     if (!newMessage) return;
-    console.log(newMessage);
     if (mode == 'private') {
       SendPrivateMessage(newMessage, selected.address);
     }
@@ -71,6 +70,7 @@
 <style>
   .messages {
     overflow-y: scroll;
+    height: 90%;
   }
   .message-box-background {
     background-color: white;

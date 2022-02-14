@@ -1,7 +1,7 @@
 import { and, or, equals } from 'arql-ops';
 import Transaction from 'arweave/web/lib/transaction';
 
-import { Wrap, CreateStore } from '../persistentCache';
+import { CreateStore } from '../persistentCache';
 import {
   arweave,
   FromWalletAddress,
@@ -12,21 +12,23 @@ import {
   DecryptRsa,
   UnixTimeTag
 } from '../arweave';
-import { GetMultipleTxCachedAsync, SignAndSubmitTransactionAsync } from '../arweave/transaction';
+import {
+  GetMultipleTxCachedAsync,
+  SignAndSubmitTransactionAsync
+} from '../arweave/transaction';
 
 import { ThisApp, StampTx, AppVersion } from './';
 import { user } from './user';
 import { LookupNameAsync } from '../arweave/applications/arweaveId';
-import { LookupAvatarAsync } from '../arweave/applications/arvatar.js'
+import { LookupAvatarAsync } from '../arweave/applications/arvatar.js';
 
 const TypeContact = 'Contact';
 const ContactAddressTag = 'Contact-Address';
 
-let currentUser = null;
-
 export const contacts = CreateStore('Contacts', []);
 
-user.subscribe(newUser => {
+let currentUser = null;
+user.subscribe((newUser) => {
   if (newUser && newUser.address) {
     currentUser = newUser;
     LoadContacts(newUser.address);
@@ -59,24 +61,6 @@ export async function CreateContact(address) {
 
   await SignAndSubmitTransactionAsync(contactTx, currentUser.wallet);
   console.log('contact tx: ', contactTx.id);
-
-  // const keyData = await DecryptRsa(currentUser.wallet, arweave.utils.b64UrlToBuffer(contactTx.data));
-
-  // console.log(aesKeyByteArray, keyData);
-
-  // const testPlain = 'test';
-  // const encoder = new TextEncoder();
-
-  // const plainBytes = encoder.encode(testPlain)
-  // const testEncrypted = await arweave.crypto.encrypt(plainBytes, aesKeyByteArray);
-  // const decrypted = await arweave.crypto.decrypt(testEncrypted, aesKeyByteArray);
-  // const decoder = new TextDecoder();
-  // const decodedTest = decoder.decode(decrypted);
-
-  // console.log(plainBytes)
-  // console.log(testEncrypted);
-  // console.log(decrypted);
-  // console.log(decodedTest);
 }
 
 async function createContactTx(
@@ -111,9 +95,6 @@ function AddContactAddress(tx, address) {
 }
 
 /**
- *
- *
- * @param {Transaction} tx
  * @param {string} address
  */
 function HasContactAddress(address) {
@@ -130,14 +111,14 @@ export async function LoadContacts(address) {
     await arweave.arql(contactsDataQuery)
   );
   let newContacts = await Promise.all(
-    txs.map(async tx => {
+    txs.map(async (tx) => {
       const dataBuffer = arweave.utils.b64UrlToBuffer(tx.data);
       if (dataBuffer.length != 1024) return null;
 
       const txFrom = await arweave.wallets.ownerToAddress(tx.owner);
       const txData = {};
       txData.address = txFrom;
-      tx.get('tags').forEach(tag => {
+      tx.get('tags').forEach((tag) => {
         let key = tag.get('name', { decode: true, string: true });
         let value = tag.get('value', { decode: true, string: true });
         if (key === UnixTimeTag) txData.unixTime = value;
@@ -153,7 +134,7 @@ export async function LoadContacts(address) {
         keyBytes = new Uint8Array(dataBuffer.slice(512));
         contactAddress = txData.address;
       }
-      const key = await DecryptRsa(currentUser.wallet, keyBytes)
+      const key = await DecryptRsa(currentUser.wallet, keyBytes);
       return {
         address: contactAddress,
         aesKey: key,
@@ -161,8 +142,8 @@ export async function LoadContacts(address) {
         iconUrl: await LookupAvatarAsync(contactAddress)
       };
     })
-  )
-  newContacts = newContacts.filter(contact => contact !== null)
+  );
+  newContacts = newContacts.filter((contact) => contact !== null);
   contacts.set(newContacts);
 }
 
