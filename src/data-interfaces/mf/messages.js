@@ -160,7 +160,11 @@ async function createMessageTransaction(message, type, address, aesKey) {
 
   const tx = await arweave.createTransaction({ data }, currentUser.wallet);
 
-  localStorage.setItem('txBeforeArweave', JSON.stringify(tx));
+  let decrypted = tx.data;
+  decrypted = Base64.decode(decrypted);
+  decrypted = encoder.encode(decrypted);
+  decrypted = arweave.crypto.decrypt(decrypted, aesKey);
+  console.log(decrypted);
 
   StampTx(tx);
   AddType(tx, type);
