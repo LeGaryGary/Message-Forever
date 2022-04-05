@@ -47,7 +47,11 @@
       {:else}
         <div class="container darker">
           <!-- Need to put in avatars like in contacts -->
-          <img src={avatar} alt="Arvatar" class="contact-item no-select" />
+          <img
+            src={avatar}
+            alt="Arvatar"
+            class="contact-item no-select avatar"
+          />
           <p>{message.content}</p>
           <span>{UnixTimeToMessageTime(message.time)}</span>
         </div>

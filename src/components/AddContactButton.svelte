@@ -20,6 +20,8 @@
       event.preventDefault();
       if (!addressValid) return;
       console.log('adding contact address: ', address);
+      
+      if (makingContact) return;
       makingContact = true;
       await CreateContact(address);
       makingContact = false;

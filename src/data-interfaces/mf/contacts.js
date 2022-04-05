@@ -1,6 +1,8 @@
 import { and, or, equals } from 'arql-ops';
 import Transaction from 'arweave/web/lib/transaction';
 
+import { get } from 'svelte/store';
+
 import { CreateStore } from '../persistentCache';
 import {
   arweave,
@@ -35,10 +37,26 @@ user.subscribe((newUser) => {
   }
 });
 
+let addedThisSession = [];
+
 export const selectedContact = CreateStore('ContactSelected', null);
 
 export async function CreateContact(address) {
   if (currentUser === null) return;
+
+  let contactInContacts = get(contacts).filter(c => c.address == address);
+
+  if (contact.length > 0) {
+    alert('Contact already exists!')
+    return;
+  }
+
+  let addressInAdded = addedThisSession.filter(a => a == address);
+
+  if (addressInAdded.length > 0) {
+    alert('Already added this contact!')
+    return;
+  }
 
   // TODO: Check contact and request already exists
 
@@ -61,6 +79,8 @@ export async function CreateContact(address) {
 
   await SignAndSubmitTransactionAsync(contactTx, currentUser.wallet);
   console.log('contact tx: ', contactTx.id);
+
+  addedThisSession.push(address);
 }
 
 async function createContactTx(
@@ -112,8 +132,9 @@ export async function LoadContacts(address) {
   );
   let newContacts = await Promise.all(
     txs.map(async (tx) => {
-      const dataBuffer = arweave.utils.b64UrlToBuffer(tx.data);
-      if (dataBuffer.length != 1024) return null;
+      try{
+        const dataBuffer = arweave.utils.b64UrlToBuffer(tx.data);
+        if (dataBuffer.length != 1024) return null;
 
       const txFrom = await arweave.wallets.ownerToAddress(tx.owner);
       const txData = {};
@@ -141,9 +162,14 @@ export async function LoadContacts(address) {
         name: await LookupNameAsync(contactAddress),
         iconUrl: await LookupAvatarAsync(contactAddress)
       };
+      }
+      catch(e){
+        console.log(e)
+      }
+      
     })
   );
-  newContacts = newContacts.filter((contact) => contact !== null);
+  newContacts = newContacts.filter((contact) => contact != null && contact != undefined);
   contacts.set(newContacts);
 }
 

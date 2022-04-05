@@ -1,6 +1,7 @@
 import { equals } from 'arql-ops';
 
-import { Base64 } from 'js-base64';
+import {encode, decode} from 'uint8-to-base64';
+import { uint8ArrayToBase64, base64ToUint8Array } from 'base64-u8array-arraybuffer';
 
 import Transaction from 'arweave/web/lib/transaction';
 import { get } from 'svelte/store';
@@ -28,8 +29,8 @@ export function HasRecipent(address) {
   return equals(RecipientTag, address);
 }
 
-const encoder = new TextEncoder('utf-8');
-const decoder = new TextDecoder('utf-8');
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
 
 let currentUser;
 user.subscribe((newUser) => {
@@ -78,8 +79,7 @@ export async function ConstructMessageObject(tx, aesKey) {
   let messageContent;
   let data = tx.data;
   if (typeof data != 'string') data = decoder.decode(data);
-  try {data = Base64.decode(data);} catch {}
-  data = encoder.encode(data);
+  try {data = base64ToUint8Array(data);} catch {}
   try{
     if (aesKey) messageContent = await arweave.crypto.decrypt(data, aesKey);
     else messageContent = data;
@@ -136,7 +136,7 @@ export function GetPrivateMessageKey(address) {
   const locatedContact = currentContacts.find(
     (contact) => contact.address === address
   );
-  return locatedContact.aesKey;
+  if (locatedContact) return locatedContact.aesKey;
 }
 
 /**
@@ -153,18 +153,11 @@ async function createMessageTransaction(message, type, address, aesKey) {
   let data = encoder.encode(message);
   if (aesKey) data = await arweave.crypto.encrypt(data, aesKey);
 
-  data = decoder.decode(data);
-  data = Base64.encode(data);
+  data = uint8ArrayToBase64(data);
 
-  console.log(data);
+  console.log('Before TX', data)
 
   const tx = await arweave.createTransaction({ data }, currentUser.wallet);
-
-  let decrypted = tx.data;
-  decrypted = Base64.decode(decrypted);
-  decrypted = encoder.encode(decrypted);
-  decrypted = arweave.crypto.decrypt(decrypted, aesKey);
-  console.log(decrypted);
 
   StampTx(tx);
   AddType(tx, type);

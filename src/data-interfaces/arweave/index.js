@@ -32,6 +32,7 @@ export function FromWalletAddress(address) {
  */
 export async function EncryptViaAddress(bytes, address) {
   const pubKey = await getPublicKey(address);
+  console.log('Pub key for ' + address + ' is:', pubKey);
   const encyptedBuffer = await EncryptRsa(pubKey, bytes);
   return encyptedBuffer;
 }
@@ -43,6 +44,7 @@ export async function EncryptViaAddress(bytes, address) {
  * @param {Uint8Array} byteArray
  */
 async function EncryptRsa(pubKey, byteArray) {
+  console.log(pubKey)
   return await window.crypto.subtle.encrypt(
     // encrypt AES-256 key with own RSA public key using RSA-OAEP https://github.com/ArweaveTeam/weavemail/blob/master/crypto.js
     {
@@ -87,6 +89,8 @@ async function walletToKey(wallet) {
 
 async function getPublicKey(address) {
   var txid = await arweave.wallets.getLastTransactionID(address);
+
+  if (!txid) alert('The wallet ' + address + ' has never sent a transaction. \r\n In order to add contact contact must have atleast 1 transaction, it is recommened to set your name on ArweaveID')
 
   if (txid == '') {
     return undefined;
