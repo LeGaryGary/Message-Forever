@@ -27,7 +27,7 @@
     "parcel-bundler": "^1.12.4",
     "parcel-plugin-bundle-visualiser": "^1.2.0",
     "parcel-plugin-svelte": "^4.0.9",
-    "svelte": "^3.46.4"
+    "svelte": "^3.49.0"
   },
   "dependencies": {
     "arql-ops": "^1.0.0",
